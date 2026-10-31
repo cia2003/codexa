@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colors */
+  --color-text: #1f2a1c;
+  --color-text-muted: #5a6556;
+  --color-background: #faf7ec;
+  --color-border: #e3ddc5;
+  --color-primary: #4f7a2e;
+  --color-primary-hover: #3a5c22;
+  --color-button-text: #ffffff;
+  --color-accent-htr: #b8893b;
+
+  /* Fonts */
+  --font-heading: var(--font-source-sans-3), "Source Sans 3", sans-serif;
+  --font-body: var(--font-inter), Inter, sans-serif;
+  --font-greek: var(--font-gentium-plus), "Gentium Plus", serif;
+
+  /* Type scale: font size, line height, weight, letter spacing */
+  --text-xs: 12px;
+  --text-xs-line-height: 16px;
+  --text-xs-weight: 500;
+  --text-xs-letter-spacing: 0.02em;
+  --text-sm: 14px;
+  --text-sm-line-height: 20px;
+  --text-sm-weight: 400;
+  --text-sm-letter-spacing: 0.01em;
+  --text-base: 16px;
+  --text-base-line-height: 24px;
+  --text-base-weight: 400;
+  --text-base-letter-spacing: 0;
+  --text-lg: 18px;
+  --text-lg-line-height: 28px;
+  --text-lg-weight: 400;
+  --text-lg-letter-spacing: 0;
+  --text-xl: 20px;
+  --text-xl-line-height: 28px;
+  --text-xl-weight: 600;
+  --text-xl-letter-spacing: 0;
+  --text-2xl: 24px;
+  --text-2xl-line-height: 32px;
+  --text-2xl-weight: 600;
+  --text-2xl-letter-spacing: -0.01em;
+  --text-3xl: 30px;
+  --text-3xl-line-height: 38px;
+  --text-3xl-weight: 600;
+  --text-3xl-letter-spacing: -0.015em;
+  --text-4xl: 40px;
+  --text-4xl-line-height: 48px;
+  --text-4xl-weight: 600;
+  --text-4xl-letter-spacing: -0.02em;
+
+  /* Spacing and layout */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --page-padding-x: 48px;
+  --content-max-width: 1120px;
+  --section-padding-y: 96px;
+  --grid-gutter: 24px;
+  --card-padding: 24px;
+  --heading-text-gap: 16px;
+  --paragraph-gap: 16px;
+  --item-gap: 24px;
+  --line-length-max: 720px;
+
+  /* Controls */
+  --control-min-height: 44px;
+  --control-radius: 8px;
+  --button-padding-y: 12px;
+  --button-padding-x: 20px;
+  --tap-target-min-size: 44px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-text);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (max-width: 767px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --text-2xl: 22px;
+    --text-2xl-line-height: 30px;
+    --text-3xl: 26px;
+    --text-3xl-line-height: 34px;
+    --text-4xl: 32px;
+    --text-4xl-line-height: 40px;
+    --page-padding-x: 20px;
+    --section-padding-y: 48px;
+    --grid-gutter: 16px;
+    --card-padding: 16px;
+    --heading-text-gap: 12px;
+    --item-gap: 16px;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
 }
