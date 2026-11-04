@@ -18,8 +18,8 @@ export default function Navbar({
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   return (
-    <nav className="border-b border-[var(--color-border)] bg-[var(--color-background)]">
-      <div className="mx-auto flex h-16 w-full items-center justify-between px-5 min-[1440px]:px-0 min-[1440px]:[width:calc(100%-320px)]">
+    <nav className="border-b border-[var(--color-border)] bg-[var(--color-background)] sticky top-0 z-10 bg-[var(--color-background)] backdrop-blur-[var(--blur-amount)]">
+      <div className="mx-auto flex h-16 w-full items-center justify-between px-5 min-[1440px]:px-[160px]">
         <div className="flex min-w-0 items-center gap-8">
           <Link
             href="/"
@@ -29,7 +29,7 @@ export default function Navbar({
           </Link>
 
           <div className="flex items-center gap-1">
-            <Link href="/dashboard" className={navLinkClass}>
+            <Link href="/" className={navLinkClass}>
               Home
             </Link>
             <Link href="/transcription" className={navLinkClass}>
