@@ -3,6 +3,9 @@ from flask import Flask
 from config import Config
 from app.extensions import db, migrate, jwt, cors
 
+from app.routes.health import health_bp
+from app.routes.auth import auth_bp
+
 
 def create_app():
 
@@ -23,11 +26,15 @@ def create_app():
         }
     )
 
-    from app.routes.health import health_bp
-
     app.register_blueprint(
         health_bp,
         url_prefix="/api"
     )
+
+    app.register_blueprint(
+        auth_bp,
+        url_prefix="/api/auth"
+    )
+        
 
     return app
