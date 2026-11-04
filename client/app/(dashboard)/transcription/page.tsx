@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 export default function TranscriptionPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -29,6 +31,22 @@ export default function TranscriptionPage() {
     setImageFile(file);
   }
 
+  function clearImage() {
+    setImageUrl(null);
+    setImageFile(null);
+    setError(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function startTranscription() {
+    void Swal.fire({
+      icon: "error",
+      title: "Transcription failed",
+      text: "No transcription service is connected yet. Please try again once it is configured.",
+      confirmButtonColor: "var(--color-primary)",
+    });
+  }
+
   return (
     <main className="mx-auto w-full flex-1 px-5 py-[var(--section-padding-y)] min-[1440px]:px-[160px]">
       <div className="mx-auto w-full max-w-[1120px]">
@@ -46,12 +64,22 @@ export default function TranscriptionPage() {
             aria-labelledby="upload-heading"
             className="rounded-[var(--control-radius)] border border-[var(--color-border)] bg-white/50 p-4 sm:p-6"
           >
-            <h2
-              id="upload-heading"
-              className="mb-4 font-[var(--font-heading)] text-[length:var(--text-2xl)] leading-[var(--text-2xl-line-height)] font-semibold tracking-[-0.01em]"
-            >
-              Upload a page
-            </h2>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h2
+                id="upload-heading"
+                className="font-[var(--font-heading)] text-[length:var(--text-2xl)] leading-[var(--text-2xl-line-height)] font-semibold tracking-[-0.01em]"
+              >
+                Upload a page
+              </h2>
+              <button
+                type="button"
+                onClick={startTranscription}
+                disabled={!imageFile}
+                className="inline-flex min-h-[var(--control-min-height)] shrink-0 items-center justify-center rounded-[var(--control-radius)] bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-button-text)] transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 sm:text-base"
+              >
+                Start transcription
+              </button>
+            </div>
             <div
               onDragEnter={(event) => {
                 event.preventDefault();
@@ -68,60 +96,86 @@ export default function TranscriptionPage() {
                 setIsDragging(false);
                 selectImage(event.dataTransfer.files[0]);
               }}
-              className={`flex min-h-[280px] flex-col items-center justify-center rounded-[var(--control-radius)] border-2 border-dashed p-6 text-center transition-colors ${
+              className={`relative flex min-h-[280px] flex-col items-center justify-center rounded-[var(--control-radius)] border-2 border-dashed p-6 text-center transition-colors ${
                 isDragging
                   ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5"
                   : "border-[var(--color-border)] bg-[var(--color-background)]"
               }`}
             >
               {imageUrl ? (
-                <Image
-                  src={imageUrl}
-                  alt={`Preview of ${imageFile?.name ?? "uploaded manuscript"}`}
-                  width={400}
-                  height={260}
-                  unoptimized
-                  className="mb-4 max-h-52 w-auto max-w-full rounded object-contain"
-                />
-              ) : (
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                  className="mb-4 h-12 w-12 text-[var(--color-primary)]"
-                >
-                  <path
-                    d="M24 31V11m0 0-7 7m7-7 7 7M11 29v7a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3v-7"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
+                <>
+                  <Image
+                    src={imageUrl}
+                    alt={`Preview of ${imageFile?.name ?? "uploaded manuscript"}`}
+                    width={400}
+                    height={260}
+                    unoptimized
+                    className="max-h-60 w-auto max-w-full rounded object-contain"
                   />
-                </svg>
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    aria-label="Remove uploaded page"
+                    title="Remove uploaded page"
+                    className="absolute right-2 top-2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-[var(--color-text)] shadow-sm transition-colors hover:bg-black/[.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className="h-5 w-5"
+                    >
+                      <path
+                        d="m6 6 12 12M18 6 6 18"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeWidth="2"
+                      />
+                    </svg>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 48 48"
+                    fill="none"
+                    className="mb-4 h-12 w-12 text-[var(--color-primary)]"
+                  >
+                    <path
+                      d="M24 31V11m0 0-7 7m7-7 7 7M11 29v7a3 3 0 0 0 3 3h20a3 3 0 0 0 3-3v-7"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                  <p className="font-medium">Drag a photo here</p>
+                  <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+                    or
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(event) => {
+                      selectImage(event.target.files?.[0]);
+                      event.currentTarget.value = "";
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="mt-3 inline-flex min-h-[var(--control-min-height)] items-center justify-center rounded-[var(--control-radius)] border border-[var(--color-border)] bg-white px-5 py-3 text-base font-medium text-[var(--color-text)] transition-colors hover:bg-black/[.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+                  >
+                    Choose File
+                  </button>
+                  <p className="mt-3 text-sm text-[var(--color-text-muted)]">
+                    JPG, PNG, or another image format
+                  </p>
+                </>
               )}
-              <p className="font-medium">
-                {imageFile ? imageFile.name : "Drag a photo here"}
-              </p>
-              <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-                or
-              </p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={(event) => selectImage(event.target.files?.[0])}
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="mt-3 inline-flex min-h-[var(--control-min-height)] items-center justify-center rounded-[var(--control-radius)] border border-[var(--color-border)] bg-white px-5 py-3 text-base font-medium text-[var(--color-text)] transition-colors hover:bg-black/[.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
-              >
-                Choose File
-              </button>
-              <p className="mt-3 text-sm text-[var(--color-text-muted)]">
-                JPG, PNG, or another image format
-              </p>
             </div>
             {error && (
               <p role="alert" className="mt-3 text-sm text-red-800">

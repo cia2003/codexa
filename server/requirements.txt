@@ -1,0 +1,14 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-JWT-Extended
+Flask-Cors
+psycopg[binary]
+python-dotenv
+Pillow
+numpy
+kraken
+redis
+rq
+marshmallow
+gunicorn
