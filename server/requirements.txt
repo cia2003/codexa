@@ -8,7 +8,6 @@ psycopg2-binary
 python-dotenv
 Pillow
 numpy
-kraken
 redis
 rq
 marshmallow
