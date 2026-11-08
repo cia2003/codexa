@@ -13,6 +13,12 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    CORS_ORIGINS = [
+        origin.strip()
+        for origin in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+        if origin.strip()
+    ]
+
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
     MAX_CONTENT_LENGTH = 20 * 1024 * 1024

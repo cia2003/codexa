@@ -72,9 +72,13 @@ def register():
             "message": "Email sudah digunakan"
         }), 409
 
+    access_token = create_access_token(identity=str(new_user.id))
+
     return jsonify({
         "status": "success",
         "message": "Registrasi berhasil",
+        "access_token": access_token,
+        "token_type": "Bearer",
         "user": {
             "id": str(new_user.id),
             "email": new_user.email,

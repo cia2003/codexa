@@ -1,21 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-
-type NavbarProps = {
-  isAuthenticated?: boolean;
-  email?: string;
-};
+import {
+  clearAuthSession,
+  getStoredAuthUser,
+  type AuthUser,
+} from "@/lib/api/auth";
 
 const navLinkClass =
   "rounded-md px-3 py-2 text-sm text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-primary-hover)]";
 
-export default function Navbar({
-  isAuthenticated = false,
-  email,
-}: NavbarProps) {
+export default function Navbar() {
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    const syncAuthUser = () => setUser(getStoredAuthUser());
+    syncAuthUser();
+    window.addEventListener("storage", syncAuthUser);
+    window.addEventListener("codexa-auth-change", syncAuthUser);
+
+    return () => {
+      window.removeEventListener("storage", syncAuthUser);
+      window.removeEventListener("codexa-auth-change", syncAuthUser);
+    };
+  }, []);
+
+  function handleLogout() {
+    clearAuthSession();
+    setIsAccountMenuOpen(false);
+  }
 
   return (
     <nav className="border-b border-[var(--color-border)] bg-[var(--color-background)] sticky top-0 z-10 bg-[var(--color-background)] backdrop-blur-[var(--blur-amount)]">
@@ -41,7 +56,7 @@ export default function Navbar({
           </div>
         </div>
 
-        {isAuthenticated ? (
+        {user ? (
           <div className="relative ml-4 shrink-0">
             <button
               type="button"
@@ -65,7 +80,7 @@ export default function Navbar({
                   strokeWidth="1.7"
                 />
               </svg>
-              <span className="max-w-48 truncate">{email ?? "Account"}</span>
+              <span className="max-w-48 truncate">{user.email}</span>
               <svg
                 aria-hidden="true"
                 viewBox="0 0 20 20"
@@ -93,6 +108,14 @@ export default function Navbar({
                 >
                   Account settings
                 </Link>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={handleLogout}
+                  className="block w-full rounded-md px-3 py-2 text-left text-sm text-[var(--color-text)] hover:bg-black/5"
+                >
+                  Logout
+                </button>
               </div>
             )}
           </div>
