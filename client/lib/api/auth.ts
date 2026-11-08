@@ -1,6 +1,4 @@
-const API_BASE_URL = (
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api"
-).replace(/\/+$/, "");
+import { apiFetch } from "@/lib/api";
 
 const AUTH_STORAGE_KEY = "codexa-auth";
 
@@ -10,7 +8,7 @@ export type AuthUser = {
   display_name: string | null;
 };
 
-type AuthResponse = {
+export type AuthResponse = {
   status: "success";
   message: string;
   user: AuthUser;
@@ -18,42 +16,15 @@ type AuthResponse = {
   token_type?: "Bearer";
 };
 
-type ApiErrorResponse = {
-  message?: string;
-};
-
 async function postAuth(
   endpoint: "login" | "register",
   payload: Record<string, string>,
 ): Promise<AuthResponse> {
-  let response: Response;
-
-  try {
-    response = await fetch(`${API_BASE_URL}/auth/${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-  } catch {
-    throw new Error(
-      "Tidak dapat terhubung ke server. Pastikan server berjalan lalu coba lagi.",
-    );
-  }
-
-  let result: AuthResponse | ApiErrorResponse;
-  try {
-    result = (await response.json()) as AuthResponse | ApiErrorResponse;
-  } catch {
-    throw new Error("Server mengirim respons yang tidak valid.");
-  }
-
-  if (!response.ok) {
-    throw new Error(
-      result.message ?? "Autentikasi gagal. Silakan coba lagi.",
-    );
-  }
-
-  return result as AuthResponse;
+  return apiFetch<AuthResponse>(`/auth/${endpoint}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
 }
 
 export function registerUser(payload: {
