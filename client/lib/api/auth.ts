@@ -20,7 +20,7 @@ async function postAuth(
   endpoint: "login" | "register",
   payload: Record<string, string>,
 ): Promise<AuthResponse> {
-  return apiFetch<AuthResponse>(`/auth/${endpoint}`, {
+  return apiFetch<AuthResponse>(`/api/auth/${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

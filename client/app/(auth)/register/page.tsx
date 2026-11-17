@@ -43,7 +43,7 @@ export default function RegisterPage() {
     } catch (submitError) {
       setError(
         submitError instanceof Error
-          ? "Registrasi gagal. Silakan coba lagi."
+          ? submitError.message
           : "Registrasi gagal. Silakan coba lagi.",
       );
     } finally {
