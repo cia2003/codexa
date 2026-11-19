@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 type SavedTranscription = {
   id: string;
@@ -13,6 +14,7 @@ const savedTranscriptions: SavedTranscription[] = [];
 const pageSize = 10;
 
 export default function HistoryPage() {
+  const isAuthorized = useRequireAuth();
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,9 +54,11 @@ export default function HistoryPage() {
     setCurrentPage(1);
   }
 
+  if (!isAuthorized) return null;
+
   return (
     <main className="mx-auto w-full flex-1 px-5 py-[var(--section-padding-y)] min-[1440px]:px-[160px]">
-      <div className="mx-auto w-full max-w-[1120px]">
+      <div className="mx-auto w-full">
         <header className="mb-8">
           <h1 className="font-[var(--font-heading)] text-[length:var(--text-4xl)] leading-[var(--text-4xl-line-height)] font-semibold tracking-[-0.02em]">
             History

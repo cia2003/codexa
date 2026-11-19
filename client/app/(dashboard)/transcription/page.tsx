@@ -4,8 +4,10 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 export default function TranscriptionPage() {
+  const isAuthorized = useRequireAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -47,9 +49,11 @@ export default function TranscriptionPage() {
     });
   }
 
+  if (!isAuthorized) return null;
+
   return (
     <main className="mx-auto w-full flex-1 px-5 py-[var(--section-padding-y)] min-[1440px]:px-[160px]">
-      <div className="mx-auto w-full max-w-[1120px]">
+      <div className="mx-auto w-full">
         <header className="mb-8">
           <h1 className="font-[var(--font-heading)] text-[length:var(--text-4xl)] leading-[var(--text-4xl-line-height)] font-semibold tracking-[-0.02em]">
             Transcribe a Manuscript
@@ -96,7 +100,9 @@ export default function TranscriptionPage() {
                 setIsDragging(false);
                 selectImage(event.dataTransfer.files[0]);
               }}
-              className={`relative flex min-h-[280px] flex-col items-center justify-center rounded-[var(--control-radius)] border-2 border-dashed p-6 text-center transition-colors ${
+              className={`relative h-[280px] overflow-x-hidden overflow-y-auto rounded-[var(--control-radius)] border-2 border-dashed text-center transition-colors ${
+                imageUrl ? "p-0" : "flex flex-col items-center justify-center p-6"
+              } ${
                 isDragging
                   ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5"
                   : "border-[var(--color-border)] bg-[var(--color-background)]"
@@ -107,10 +113,10 @@ export default function TranscriptionPage() {
                   <Image
                     src={imageUrl}
                     alt={`Preview of ${imageFile?.name ?? "uploaded manuscript"}`}
-                    width={400}
-                    height={260}
+                    width={1200}
+                    height={1600}
                     unoptimized
-                    className="max-h-60 w-auto max-w-full rounded object-contain"
+                    className="block h-auto w-full"
                   />
                   <button
                     type="button"

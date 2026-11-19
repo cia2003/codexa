@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getStoredAuthUser } from "@/lib/api/auth";
 
 type RecentTranscription = {
   id: string;
@@ -9,6 +13,20 @@ type RecentTranscription = {
 const recentTranscriptions: RecentTranscription[] = [];
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const syncAuth = () => setIsLoggedIn(Boolean(getStoredAuthUser()));
+    syncAuth();
+    window.addEventListener("storage", syncAuth);
+    window.addEventListener("codexa-auth-change", syncAuth);
+
+    return () => {
+      window.removeEventListener("storage", syncAuth);
+      window.removeEventListener("codexa-auth-change", syncAuth);
+    };
+  }, []);
+
   return (
     <main className="mx-auto w-full flex-1 px-5 min-[1440px]:px-[160px]">
       <section
@@ -31,7 +49,7 @@ export default function Home() {
               check the result and save it.
             </p>
             <Link
-              href="/transcription"
+              href={isLoggedIn ? "/transcription" : "/login"}
               className="mt-8 inline-flex min-h-[var(--control-min-height)] items-center justify-center gap-2 rounded-[var(--control-radius)] bg-[var(--color-primary)] px-5 py-3 text-base font-medium text-[var(--color-button-text)] transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
             >
               Start Transcribing
@@ -101,40 +119,58 @@ export default function Home() {
             Recent transcriptions
           </h2>
           <Link
-            href="/history"
+            href={isLoggedIn ? "/history" : "/login"}
             className="inline-flex min-h-[var(--tap-target-min-size)] shrink-0 items-center text-base font-medium text-[var(--color-primary)] underline underline-offset-4 transition-colors hover:text-[var(--color-primary-hover)]"
           >
             View all
           </Link>
         </div>
 
-        {recentTranscriptions.length > 0 ? (
-          <ul className="divide-y divide-[var(--color-border)] rounded-[var(--control-radius)] border border-[var(--color-border)]">
-            {recentTranscriptions.map((transcription) => (
-              <li key={transcription.id}>
-                <Link
-                  href={`/transcription/${transcription.id}`}
-                  className="flex min-h-[var(--tap-target-min-size)] items-center justify-between gap-4 rounded-[var(--control-radius)] px-4 py-4 transition-colors hover:bg-black/[.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] sm:px-6"
-                >
-                  <span className="min-w-0 truncate font-medium">
-                    {transcription.name}
-                  </span>
-                  <span className="shrink-0 text-sm text-[var(--color-text-muted)]">
-                    Updated{" "}
-                    {new Intl.DateTimeFormat("en", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    }).format(new Date(transcription.updatedAt))}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="rounded-[var(--control-radius)] border border-[var(--color-border)] px-6 py-8 text-center text-base text-[var(--color-text-muted)]">
-            No manuscript were transcribe
-          </p>
-        )}
+        <div className="relative">
+          <div
+            aria-hidden={!isLoggedIn}
+            className={isLoggedIn ? "" : "pointer-events-none select-none blur-sm"}
+          >
+            {recentTranscriptions.length > 0 ? (
+              <ul className="divide-y divide-[var(--color-border)] rounded-[var(--control-radius)] border border-[var(--color-border)]">
+                {recentTranscriptions.map((transcription) => (
+                  <li key={transcription.id}>
+                    <Link
+                      href={`/transcription/${transcription.id}`}
+                      tabIndex={isLoggedIn ? undefined : -1}
+                      className="flex min-h-[var(--tap-target-min-size)] items-center justify-between gap-4 rounded-[var(--control-radius)] px-4 py-4 transition-colors hover:bg-black/[.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] sm:px-6"
+                    >
+                      <span className="min-w-0 truncate font-medium">
+                        {transcription.name}
+                      </span>
+                      <span className="shrink-0 text-sm text-[var(--color-text-muted)]">
+                        Updated{" "}
+                        {new Intl.DateTimeFormat("en", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        }).format(new Date(transcription.updatedAt))}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="rounded-[var(--control-radius)] border border-[var(--color-border)] px-6 py-8 text-center text-base text-[var(--color-text-muted)]">
+                No manuscript were transcribe
+              </p>
+            )}
+          </div>
+          {!isLoggedIn && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-[var(--control-radius)] bg-[var(--color-background)]/40">
+              <Link
+                href="/login"
+                className="inline-flex min-h-[var(--control-min-height)] items-center justify-center rounded-[var(--control-radius)] bg-[var(--color-primary)] px-5 py-3 text-base font-medium text-[var(--color-button-text)] transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+              >
+                Login to access transcription
+              </Link>
+            </div>
+          )}
+        </div>
       </section>
     </main>
   );
